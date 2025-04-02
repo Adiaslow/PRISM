@@ -2,8 +2,8 @@
 
 [![PyPI version](https://badge.fury.io/py/prism-molecular.svg)](https://badge.fury.io/py/prism-molecular)
 [![Documentation Status](https://readthedocs.org/projects/prism-molecular/badge/?version=latest)](https://prism-molecular.readthedocs.io/en/latest/?badge=latest)
-[![Tests](https://github.com/yourusername/prism/workflows/Tests/badge.svg)](https://github.com/yourusername/prism/actions)
-[![Coverage](https://codecov.io/gh/yourusername/prism/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/prism)
+[![Tests](https://github.com/Adiaslow/prism/workflows/Tests/badge.svg)](https://github.com/Adiaslow/prism/actions)
+[![Coverage](https://codecov.io/gh/Adiaslow/prism/branch/main/graph/badge.svg)](https://codecov.io/gh/Adiaslow/prism)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 PRISM is a high-performance algorithm for finding maximum common substructures in molecular graphs. It uses a parallel recursive approach combined with advanced heuristics to efficiently identify structural similarities between molecules.
@@ -113,7 +113,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/prism.git
+git clone https://github.com/Adiaslow/prism.git
 cd prism
 
 # Create a virtual environment
@@ -132,11 +132,11 @@ pytest
 If you use PRISM in your research, please cite:
 
 ```bibtex
-@article{prism2024,
+@article{prism2025,
     title={PRISM: Parallel Recursive Isomorphism Search for Molecules},
-    author={PRISM Team},
-    journal={Journal Name},
-    year={2024},
+    author={Adam Murray},
+    journal={:)},
+    year={2025},
     volume={1},
     pages={1--10}
 }
