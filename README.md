@@ -134,7 +134,7 @@ where:
 
 The neighborhood topology component is defined as:
 
-$$\phi_n(v) = \sum_{i=1}^d \alpha^i \sum_{u \in N_i(v)} \phi_e(u)$$
+$$\phi_n(v) = \sum_{i=1}^d \alpha^i \cdot \sum_{u \in N_i(v)} \phi_e(u)$$
 
 where:
 
@@ -146,7 +146,7 @@ where:
 
 For nodes $v_1 \in V_1, v_2 \in V_2$ from different molecules, compatibility is computed as:
 
-$$C(v_1, v_2) = \frac{\sigma(v_1) \cdot \sigma(v_2)}{\|\sigma(v_1)\| \|\sigma(v_2)\|} \cdot \delta(v_1, v_2)$$
+$$C(v_1, v_2) = \frac{\sigma(v_1) \cdot \sigma(v_2)}{\left\|\sigma(v_1)\right\| \cdot \left\|\sigma(v_2)\right\|} \cdot \delta(v_1, v_2)$$
 
 where $\delta(v_1, v_2)$ is a binary constraint satisfaction term:
 
@@ -162,7 +162,7 @@ Constraints include:
 - Element type compatibility
 - Degree compatibility:
 
-$$|deg(v_1) - deg(v_2)| \leq \tau_{deg}$$
+$$\left|deg(v_1) - deg(v_2)\right| \leq \tau_{deg}$$
 
 - Bond type compatibility
 - Valence compatibility
@@ -187,11 +187,11 @@ $$U(v_1, v_2) = 1 - \frac{|\{u \in V_2 : C(v_1, u) > \theta\}| + |\{u \in V_1 : 
 
 - $I(v_1, v_2)$: Structural importance (centrality-based)
 
-$$I(v_1, v_2) = \sqrt{\frac{BC(v_1)}{max_{u \in V_1}BC(u)} \cdot \frac{BC(v_2)}{max_{u \in V_2}BC(u)}}$$
+$$I(v_1, v_2) = \sqrt{\frac{BC(v_1)}{\max\limits_{u \in V_1}BC(u)} \cdot \frac{BC(v_2)}{\max\limits_{u \in V_2}BC(u)}}$$
 
 - $E(v_1, v_2)$: Expansion potential
 
-$$E(v_1, v_2) = \frac{|N(v_1)| \cdot |N(v_2)|}{max_{u_1 \in V_1, u_2 \in V_2}|N(u_1)| \cdot |N(u_2)|}$$
+$$E(v_1, v_2) = \frac{\left|N(v_1)\right| \cdot \left|N(v_2)\right|}{\max\limits_{u_1 \in V_1, u_2 \in V_2}\left|N(u_1)\right| \cdot \left|N(u_2)\right|}$$
 
 - $K(v_1, v_2)$: Connectivity score based on local topology
 
@@ -213,11 +213,11 @@ $$g(M) = \sum_{(v_1, v_2) \in M} C(v_1, v_2) \cdot Q(M, v_1, v_2)$$
 
 where $Q(M, v_1, v_2)$ is the structural consistency term:
 
-$$Q(M, v_1, v_2) = \frac{|\{(u_1, u_2) \in M : d(v_1, u_1) = d(v_2, u_2)\}|}{|M| - 1}$$
+$$Q(M, v_1, v_2) = \frac{\left|\{(u_1, u_2) \in M : d(v_1, u_1) = d(v_2, u_2)\}\right|}{\left|M\right| - 1}$$
 
 The heuristic estimate $h(M)$ is:
 
-$$h(M) = \min(|V_1|, |V_2|) - |M| + \sum_{v_1 \in V_1 \setminus M_1} \max_{v_2 \in V_2 \setminus M_2} C(v_1, v_2)$$
+$$h(M) = \min(\left|V_1\right|, \left|V_2\right|) - \left|M\right| + \sum_{v_1 \in V_1 \setminus M_1} \max_{v_2 \in V_2 \setminus M_2} C(v_1, v_2)$$
 
 where:
 
