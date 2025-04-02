@@ -160,7 +160,10 @@ $$
 Constraints include:
 
 - Element type compatibility
-- Degree compatibility: $|deg(v_1) - deg(v_2)| \leq \tau_{deg}$
+- Degree compatibility:
+
+$$|deg(v_1) - deg(v_2)| \leq \tau_{deg}$$
+
 - Bond type compatibility
 - Valence compatibility
 
@@ -179,11 +182,17 @@ where:
 
 - $w_u, w_s, w_e, w_c \in \mathbb{R}^+$: Non-negative weight parameters
 - $U(v_1, v_2)$: Signature uniqueness score
-  $$U(v_1, v_2) = 1 - \frac{|\{u \in V_2 : C(v_1, u) > \theta\}| + |\{u \in V_1 : C(u, v_2) > \theta\}|}{|V_1| + |V_2|}$$
+
+$$U(v_1, v_2) = 1 - \frac{|\{u \in V_2 : C(v_1, u) > \theta\}| + |\{u \in V_1 : C(u, v_2) > \theta\}|}{|V_1| + |V_2|}$$
+
 - $I(v_1, v_2)$: Structural importance (centrality-based)
-  $$I(v_1, v_2) = \sqrt{\frac{BC(v_1)}{max_{u \in V_1}BC(u)} \cdot \frac{BC(v_2)}{max_{u \in V_2}BC(u)}}$$
+
+$$I(v_1, v_2) = \sqrt{\frac{BC(v_1)}{max_{u \in V_1}BC(u)} \cdot \frac{BC(v_2)}{max_{u \in V_2}BC(u)}}$$
+
 - $E(v_1, v_2)$: Expansion potential
-  $$E(v_1, v_2) = \frac{|N(v_1)| \cdot |N(v_2)|}{max_{u_1 \in V_1, u_2 \in V_2}|N(u_1)| \cdot |N(u_2)|}$$
+
+$$E(v_1, v_2) = \frac{|N(v_1)| \cdot |N(v_2)|}{max_{u_1 \in V_1, u_2 \in V_2}|N(u_1)| \cdot |N(u_2)|}$$
+
 - $K(v_1, v_2)$: Connectivity score based on local topology
 
 where:
