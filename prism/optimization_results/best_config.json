@@ -1,0 +1,29 @@
+{
+    "signature": {
+        "max_distance": 5
+    },
+    "compatibility": {
+        "progressive_refinement": true
+    },
+    "seed": {
+        "signature_uniqueness_weight": 0.6064483815465395,
+        "structural_importance_weight": 0.5504466018892674,
+        "expansion_potential_weight": 0.43326468628243814,
+        "connectivity_weight": 0.3719192204002097,
+        "max_seeds": 17,
+        "diversity_threshold": 0.8543277631300153,
+        "min_compatibility_score": 0.7808007330051887,
+        "use_weighted_sampling": false
+    },
+    "match": {
+        "max_iterations": 790896
+    },
+    "performance": {
+        "num_threads": 8
+    },
+    "metrics": {
+        "avg_match_size": 1.05,
+        "avg_match_ratio": 0.15,
+        "avg_time": 0.0028326094150543215
+    }
+}

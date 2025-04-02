@@ -1,0 +1,36 @@
+{
+  "name": "Default Configuration",
+  "description": "Default parameters for the PRISM algorithm",
+  "signature_params": {
+    "max_distance": 3,
+    "use_bond_types": true,
+    "use_cycles": true
+  },
+  "compatibility_params": {
+    "element_match_required": true,
+    "min_signature_similarity": 0.6,
+    "bond_type_match_required": false,
+    "progressive_refinement": true,
+    "max_compatible_degree_diff": 1,
+    "use_sparse_matrix": true
+  },
+  "match_params": {
+    "max_time_seconds": 30,
+    "max_iterations": 1000000,
+    "num_threads": 4,
+    "use_forward_checking": true,
+    "use_conflict_backjumping": true
+  },
+  "seed_params": {
+    "max_seeds": 10,
+    "diversity_threshold": 0.3,
+    "min_compatibility_score": 0.7,
+    "use_weighted_sampling": true,
+    "priority": {
+      "signature_uniqueness_weight": 0.4,
+      "structural_importance_weight": 0.3,
+      "expansion_potential_weight": 0.2,
+      "connectivity_weight": 0.1
+    }
+  }
+} 
