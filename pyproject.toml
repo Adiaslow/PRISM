@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prism-molecular"
+description = "Parallel Recursive Isomorphism Search for Molecules"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [
+    {name = "PRISM Team", email = "example@example.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+dynamic = ["version"]
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "networkx>=2.6.0",
+    "rdkit>=2021.03.1",
+    "tqdm>=4.61.0",
+    "numba>=0.53.0",
+    "pydantic>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/prism"
+Documentation = "https://prism-molecular.readthedocs.io"
+Repository = "https://github.com/yourusername/prism.git"
+Changelog = "https://github.com/yourusername/prism/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["prism"]
+
+[tool.setuptools_scm]
+write_to = "prism/_version.py"
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov=prism --cov-report=xml"
+testpaths = ["tests"] 

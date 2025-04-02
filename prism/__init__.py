@@ -1,5 +1,10 @@
 """PRISM: Parallel Recursive Isomorphism Search for Molecules."""
 
+from typing import Union
+
+import networkx as nx
+from rdkit import Chem
+
 from prism.core.molecular_graph import MolecularGraph
 from prism.algorithm.graph_matcher import GraphMatcher, MatchResult, MatchParameters
 from prism.core.compatibility_matrix import (
@@ -7,6 +12,7 @@ from prism.core.compatibility_matrix import (
     CompatibilityParameters,
 )
 from prism.core.node_signature import NodeSignatureGenerator
+from prism.utils.input_handler import convert_to_molecular_graph
 
 
 class MolecularGraphMatcher:
@@ -26,19 +32,30 @@ class MolecularGraphMatcher:
         self.compatibility_params = compatibility_params
         self.match_params = match_params
 
-    def find_maximum_common_subgraph(self, mol1, mol2):
+    def find_maximum_common_subgraph(
+        self,
+        mol1: Union[str, Chem.Mol, nx.Graph, MolecularGraph],
+        mol2: Union[str, Chem.Mol, nx.Graph, MolecularGraph],
+    ) -> MatchResult:
         """Find the maximum common subgraph between two molecules.
 
         Args:
-            mol1: First molecule (RDKit Mol object).
-            mol2: Second molecule (RDKit Mol object).
+            mol1: First molecule in any supported format:
+                - SMILES string
+                - RDKit Mol object
+                - NetworkX Graph
+                - MolecularGraph
+            mol2: Second molecule in any supported format
 
         Returns:
             MatchResult: Result containing the mapping and statistics.
+
+        Raises:
+            ValueError: If input format is not supported or conversion fails
         """
-        # Convert RDKit molecules to MolecularGraph objects
-        graph1 = MolecularGraph.from_rdkit_mol(mol1)
-        graph2 = MolecularGraph.from_rdkit_mol(mol2)
+        # Convert inputs to MolecularGraph objects
+        graph1 = convert_to_molecular_graph(mol1)
+        graph2 = convert_to_molecular_graph(mol2)
 
         # Generate node signatures
         self.signature_generator.generate_signatures(graph1)

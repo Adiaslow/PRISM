@@ -1,148 +1,147 @@
 # PRISM: Parallel Recursive Isomorphism Search for Molecules
 
-PRISM is a state-of-the-art algorithm for molecular graph matching, specifically designed to find maximum common substructures between molecules. It employs a sophisticated combination of techniques to efficiently identify structural similarities in chemical compounds.
+[![PyPI version](https://badge.fury.io/py/prism-molecular.svg)](https://badge.fury.io/py/prism-molecular)
+[![Documentation Status](https://readthedocs.org/projects/prism-molecular/badge/?version=latest)](https://prism-molecular.readthedocs.io/en/latest/?badge=latest)
+[![Tests](https://github.com/yourusername/prism/workflows/Tests/badge.svg)](https://github.com/yourusername/prism/actions)
+[![Coverage](https://codecov.io/gh/yourusername/prism/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/prism)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Key Features
+PRISM is a high-performance algorithm for finding maximum common substructures in molecular graphs. It uses a parallel recursive approach combined with advanced heuristics to efficiently identify structural similarities between molecules.
 
-### 1. Advanced Node Signature Generation
+## Features
 
-- Generates unique molecular fingerprints using:
-  - Element type information
-  - Local connectivity patterns
-  - Neighborhood topology up to configurable distances
-  - Cycle participation information
-- Configurable weights for different signature components
-- Support for bond types and cycle information
+- Fast and accurate maximum common substructure (MCS) detection
+- Support for multiple input formats:
+  - SMILES strings
+  - RDKit molecules
+  - NetworkX graphs
+  - Native MolecularGraph format
+- Advanced node signature generation for improved matching
+- Parallel processing capabilities
+- Comprehensive molecular feature support
+- Flexible matching parameters
 
-### 2. Intelligent Seed Selection
+## Installation
 
-- Multi-factor seed pair selection based on:
-  - Signature uniqueness (40%)
-  - Structural importance (30%)
-  - Expansion potential (20%)
-  - Connectivity patterns (10%)
-- Ensures diverse starting points for the search
-- Optimizes for both local and global matching quality
-
-### 3. Bidirectional A\* Search
-
-- Uses a bidirectional search strategy with A\* guidance
-- Employs multiple scoring factors:
-  - Current contribution (30%)
-  - Structural consistency (30%)
-  - Expansion potential (20%)
-  - Global impact (20%)
-- Forward checking and conflict backjumping for efficiency
-- Parallel processing support for improved performance
-
-## Algorithm Parameters
-
-### Signature Generation
-
-```python
-signature_params = {
-    "max_distance": 2,
-    "use_bond_types": True,
-    "use_cycles": True
-}
+```bash
+pip install prism-molecular
 ```
 
-### Compatibility Matrix
-
-```python
-compatibility_params = {
-    "element_match_required": True,
-    "min_signature_similarity": 0.7,
-    "bond_type_match_required": True,
-    "progressive_refinement": True,
-    "max_compatible_degree_diff": 1
-}
-```
-
-### Matching Parameters
-
-```python
-match_params = {
-    "max_time_seconds": 30,
-    "max_iterations": 1000000,
-    "num_threads": 4,
-    "use_forward_checking": True,
-    "use_conflict_backjumping": True
-}
-```
-
-## Usage
-
-### Basic Usage
+## Quick Start
 
 ```python
 from prism import MolecularGraphMatcher
-from rdkit import Chem
 
 # Initialize the matcher
+matcher = MolecularGraphMatcher()
+
+# Find maximum common substructure between two molecules
+# You can use SMILES strings directly
+result = matcher.find_maximum_common_subgraph(
+    "CC(=O)O",     # Acetic acid
+    "CCC(=O)O"     # Propionic acid
+)
+
+# Access the results
+print(f"Match size: {result.size}")
+print(f"Node mapping: {result.mapping}")
+print(f"Match score: {result.score}")
+print(f"Time taken: {result.match_time} seconds")
+```
+
+## Advanced Usage
+
+### Custom Parameters
+
+```python
+# Configure signature generation
+signature_params = {
+    "max_distance": 4,
+    "use_bond_types": True,
+    "use_cycles": True
+}
+
+# Configure compatibility checking
+compatibility_params = {
+    "element_match_required": True,
+    "min_signature_similarity": 0.6,
+    "progressive_refinement": True
+}
+
+# Configure matching algorithm
+match_params = {
+    "max_iterations": 1000,
+    "timeout": 30,
+    "num_threads": 4
+}
+
+# Initialize with custom parameters
 matcher = MolecularGraphMatcher(
     signature_params=signature_params,
     compatibility_params=compatibility_params,
     match_params=match_params
 )
-
-# Find maximum common substructure
-mol1 = Chem.MolFromSmiles("CC(=O)O")
-mol2 = Chem.MolFromSmiles("CC(=O)OH")
-result = matcher.find_maximum_common_subgraph(mol1, mol2)
-
-# Access results
-mapping = result.mapping  # Node mapping between molecules
-size = result.size       # Size of the common substructure
-score = result.score     # Match quality score
-time = result.match_time # Execution time
 ```
 
-### Benchmark Usage
+### Using Different Input Formats
 
 ```python
-from prism.benchmark import ComparativeBenchmarkRunner
-from prism.benchmark.configs.benchmark_config import BenchmarkConfig
+# Using RDKit molecules
+from rdkit import Chem
+mol1 = Chem.MolFromSmiles("CC(=O)O")
+mol2 = Chem.MolFromSmiles("CCC(=O)O")
+result = matcher.find_maximum_common_subgraph(mol1, mol2)
 
-# Create benchmark configuration
-config = BenchmarkConfig(
-    name="Comparative Benchmark",
-    description="Comparison of molecular subgraph isomorphism algorithms",
-    pairs_per_category=20
-)
-
-# Run benchmark
-runner = ComparativeBenchmarkRunner(
-    datasets=dataset,
-    num_workers=12,
-    use_processes=True
-)
-
-result = runner.run_comparative_benchmark()
+# Using NetworkX graphs
+import networkx as nx
+graph1 = nx.Graph()
+graph1.add_node(0, symbol='C')
+graph1.add_node(1, symbol='C')
+graph1.add_edge(0, 1, bond_type='SINGLE')
+result = matcher.find_maximum_common_subgraph(graph1, graph2)
 ```
 
-## Performance Characteristics
+## Documentation
 
-PRISM is optimized for:
+For detailed documentation, visit [prism-molecular.readthedocs.io](https://prism-molecular.readthedocs.io).
 
-- Medium to large organic molecules (10-100 atoms)
-- Molecules with diverse structural features
-- Parallel processing on multi-core systems
-- Memory-efficient operation with large datasets
+## Contributing
 
-The algorithm provides a good balance between:
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-- Search completeness
-- Execution speed
-- Solution quality
-- Memory usage
+### Development Setup
 
-## Implementation Details
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/prism.git
+cd prism
 
-The algorithm is implemented in Python with key optimizations:
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 
-- Numpy-based signature computation
-- NetworkX-based graph operations
-- Parallel processing support
-- Memory-efficient data structures
-- RDKit integration for molecular operations
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+```
+
+## Citation
+
+If you use PRISM in your research, please cite:
+
+```bibtex
+@article{prism2024,
+    title={PRISM: Parallel Recursive Isomorphism Search for Molecules},
+    author={PRISM Team},
+    journal={Journal Name},
+    year={2024},
+    volume={1},
+    pages={1--10}
+}
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
