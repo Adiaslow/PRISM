@@ -2,10 +2,11 @@
 """Script to analyze atom distribution in generated benchmark dataset."""
 
 from collections import Counter
+
 from rdkit import Chem
 
-from prism.benchmark.services.dataset_generator import DatasetGenerator
 from prism.benchmark.configs.benchmark_config import BenchmarkConfig
+from prism.benchmark.services.dataset_generator import DatasetGenerator
 
 
 def main():

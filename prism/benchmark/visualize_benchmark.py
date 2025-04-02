@@ -1,16 +1,16 @@
 # examples/visualize_benchmark.py
 """Example script for visualizing PRISM benchmark results."""
 
+import glob
 import os
 import sys
-import glob
 from pathlib import Path
 
 # Add the root directory to the path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from prism.benchmark.services.visualizer import BenchmarkVisualizer
 from prism.benchmark.core.implementations.benchmark import BenchmarkResult
+from prism.benchmark.services.visualizer import BenchmarkVisualizer
 
 
 def main():

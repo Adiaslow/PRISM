@@ -9,8 +9,8 @@ import networkx as nx
 import numpy as np
 from pydantic import BaseModel, Field
 
-from prism.core.molecular_graph import MolecularGraph
 from prism.core.compatibility_matrix import CompatibilityMatrix
+from prism.core.molecular_graph import MolecularGraph
 
 
 class SeedPriority(BaseModel):

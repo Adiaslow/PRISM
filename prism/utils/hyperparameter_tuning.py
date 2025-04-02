@@ -1,32 +1,33 @@
 # examples/hyperparameter_tuning.py
 """Hyperparameter optimization for the PRISM algorithm."""
 
+import json
 import os
 import sys
 import time
-import json
-from pathlib import Path
-import numpy as np
-from functools import partial
-import matplotlib.pyplot as plt
 import traceback
-from typing import Dict, Any
+from functools import partial
+from pathlib import Path
+from typing import Any, Dict
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Add the root directory to the path
 sys.path.append(str(Path(__file__).parent.parent))
 
 # Import PRISM modules
 import prism
-from prism.benchmark.services.benchmark import BenchmarkRunner
-from prism.benchmark.services.dataset_generator import DatasetGenerator, BenchmarkConfig
-from prism.algorithm.graph_matcher import MatchParameters, GraphMatcher
-from prism.core.compatibility_matrix import CompatibilityParameters
+from prism.algorithm.graph_matcher import GraphMatcher, MatchParameters
 from prism.algorithm.seed_selection import SeedParameters, SeedPriority, SeedSelector
+from prism.benchmark.services.benchmark import BenchmarkRunner
+from prism.benchmark.services.dataset_generator import BenchmarkConfig, DatasetGenerator
+from prism.core.compatibility_matrix import CompatibilityParameters
 
 # Import Optuna (needs to be installed via pip)
 try:
     import optuna
-    from optuna.visualization import plot_param_importances, plot_optimization_history
+    from optuna.visualization import plot_optimization_history, plot_param_importances
 
     OPTUNA_AVAILABLE = True
 except ImportError:

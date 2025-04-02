@@ -6,10 +6,11 @@ to ensure it creates valid molecular pairs with diverse atom types.
 
 import unittest
 from collections import Counter
+
 from rdkit import Chem
 
-from prism.benchmark.services.dataset_generator import DatasetGenerator
 from prism.benchmark.configs.benchmark_config import BenchmarkConfig
+from prism.benchmark.services.dataset_generator import DatasetGenerator
 
 
 class TestDatasetGenerator(unittest.TestCase):

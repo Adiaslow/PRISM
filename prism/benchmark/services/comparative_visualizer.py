@@ -3,17 +3,17 @@
 
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.figure import Figure
 
 from prism.benchmark.services.comparative_benchmark import (
-    ComparativeBenchmarkResult,
     AlgorithmResult,
+    ComparativeBenchmarkResult,
 )
 
 

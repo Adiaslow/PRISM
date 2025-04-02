@@ -1,22 +1,22 @@
 # examples/run_benchmark.py
 """Example script for running PRISM benchmarks."""
 
+import json
 import os
 import sys
 import time
-import json
 from pathlib import Path
 
 # Add the root directory to the path
 sys.path.append(str(Path(__file__).parent.parent))
 
+from prism.algorithm.graph_matcher import GraphMatcher, MatchParameters
+from prism.algorithm.seed_selection import SeedParameters, SeedPriority, SeedSelector
+from prism.benchmark.configs.benchmark_config import BenchmarkConfig
 from prism.benchmark.core.implementations.benchmark import BenchmarkRunner
 from prism.benchmark.services.dataset_generator import DatasetGenerator
-from prism.benchmark.configs.benchmark_config import BenchmarkConfig
-from prism.algorithm.graph_matcher import MatchParameters, GraphMatcher
 from prism.benchmark.services.visualizer import BenchmarkVisualizer
 from prism.core.compatibility_matrix import CompatibilityParameters
-from prism.algorithm.seed_selection import SeedParameters, SeedPriority, SeedSelector
 
 
 def load_config(config_name):

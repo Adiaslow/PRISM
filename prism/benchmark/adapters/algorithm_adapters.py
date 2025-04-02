@@ -2,7 +2,7 @@
 
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union, TypedDict, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict, Union
 
 import networkx as nx
 from rdkit import Chem

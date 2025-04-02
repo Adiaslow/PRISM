@@ -14,21 +14,24 @@ Classes:
 
 # Standard library imports
 import heapq
+import logging
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from functools import total_ordering
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 # Local imports
 import numpy as np
 from pydantic import BaseModel, Field
 
+from prism.algorithm.seed_selection import SeedCandidate, SeedSelector
+from prism.core.compatibility_matrix import CompatibilityMatrix, CompatibilityParameters
+
 # Local imports
 from prism.core.molecular_graph import MolecularGraph
-from prism.core.compatibility_matrix import CompatibilityMatrix
-from prism.algorithm.seed_selection import SeedCandidate, SeedSelector
+from prism.core.node_signature import NodeSignature, SignatureParameters
 
 
 class MatchResult(BaseModel):

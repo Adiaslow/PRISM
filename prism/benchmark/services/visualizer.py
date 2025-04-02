@@ -1,13 +1,13 @@
 """Visualization utilities for benchmark results."""
 
 import os
-from typing import Dict, List, Optional, Union, Any
+import time
+from typing import Any, Dict, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import time
 
 from prism.benchmark.core.implementations.benchmark import BenchmarkResult
 

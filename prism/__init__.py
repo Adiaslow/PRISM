@@ -5,12 +5,9 @@ from typing import Union
 import networkx as nx
 from rdkit import Chem
 
+from prism.algorithm.graph_matcher import GraphMatcher, MatchParameters, MatchResult
+from prism.core.compatibility_matrix import CompatibilityMatrix, CompatibilityParameters
 from prism.core.molecular_graph import MolecularGraph
-from prism.algorithm.graph_matcher import GraphMatcher, MatchResult, MatchParameters
-from prism.core.compatibility_matrix import (
-    CompatibilityMatrix,
-    CompatibilityParameters,
-)
 from prism.core.node_signature import NodeSignatureGenerator
 from prism.utils.input_handler import convert_to_molecular_graph
 

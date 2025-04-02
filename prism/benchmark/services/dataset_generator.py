@@ -3,25 +3,21 @@
 import json
 import os
 import random
-import uuid
-import time
 import signal
-from pathlib import Path
+import time
+import uuid
 from contextlib import contextmanager
-from typing import Dict, List, Optional, Set, Tuple, Union, Any
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+import scipy.io
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, Lipinski, rdFMCS, rdMolDescriptors
-import scipy.io
 
 from prism.benchmark.configs.benchmark_config import BenchmarkConfig, CategoryConfig
-from prism.core.molecular_pair import (
-    BenchmarkDataset,
-    KnownSolution,
-    MolecularPair,
-)
 from prism.core.molecular_graph import MolecularGraph
+from prism.core.molecular_pair import BenchmarkDataset, KnownSolution, MolecularPair
 
 
 class TimeoutException(Exception):

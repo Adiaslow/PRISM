@@ -1,23 +1,21 @@
 # examples/run_comparative_benchmark.py
 """Benchmarking and comparison of multiple molecular subgraph isomorphism algorithms."""
 
+import argparse
+import json
 import os
 import sys
 import time
-import json
 from pathlib import Path
-import argparse
 
 # Add the root directory to the path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from prism.benchmark.adapters.algorithm_adapters import get_all_algorithm_adapters
-from prism.benchmark.services.comparative_benchmark import (
-    ComparativeBenchmarkRunner,
-)
-from prism.benchmark.services.dataset_generator import DatasetGenerator
 from prism.benchmark.configs.benchmark_config import BenchmarkConfig
+from prism.benchmark.services.comparative_benchmark import ComparativeBenchmarkRunner
 from prism.benchmark.services.comparative_visualizer import ComparativeVisualizer
+from prism.benchmark.services.dataset_generator import DatasetGenerator
 
 
 def main():

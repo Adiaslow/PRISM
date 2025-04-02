@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 import argparse
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 from prism.benchmark.adapters.algorithm_adapters import get_all_algorithm_adapters
 from prism.benchmark.core.metrics import BenchmarkMetrics

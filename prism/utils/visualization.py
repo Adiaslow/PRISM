@@ -2,9 +2,9 @@
 
 from typing import Dict, List, Optional, Tuple, Union
 
+import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Draw
-import numpy as np
 
 from prism.algorithm.graph_matcher import MatchResult
 

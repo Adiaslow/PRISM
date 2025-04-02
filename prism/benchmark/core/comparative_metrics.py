@@ -4,7 +4,7 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Tuple, Union, Any
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd

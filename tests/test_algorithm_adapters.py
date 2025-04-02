@@ -5,16 +5,17 @@ with molecular graph matching.
 """
 
 import unittest
+
 from rdkit import Chem
 
 from prism.benchmark.adapters.algorithm_adapters import (
-    PRISMAdapter,
-    RDKitMCSAdapter,
-    VF2Adapter,
+    CliquePlusAdapter,
     McGregorAdapter,
     MCSPlusAdapter,
+    PRISMAdapter,
+    RDKitMCSAdapter,
     UllmannAdapter,
-    CliquePlusAdapter,
+    VF2Adapter,
     get_all_algorithm_adapters,
 )
 

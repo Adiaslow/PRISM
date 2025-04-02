@@ -5,8 +5,8 @@
 from typing import List
 
 # Local imports
-from prism.algorithm.graph_matcher import GraphMatcher, MatchResult, MatchParameters
-from prism.algorithm.seed_selection import SeedSelector, SeedCandidate, SeedParameters
+from prism.algorithm.graph_matcher import GraphMatcher, MatchParameters, MatchResult
+from prism.algorithm.seed_selection import SeedCandidate, SeedParameters, SeedSelector
 
 __all__: List[str] = [
     "GraphMatcher",

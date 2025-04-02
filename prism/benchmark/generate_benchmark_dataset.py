@@ -9,20 +9,20 @@ This script creates a benchmark dataset with controlled variations across key di
 - Distribution across test categories
 """
 
+import json
 import os
 import sys
 import time
-import json
 from pathlib import Path
 
 # Add the root directory to the path
 sys.path.append(str(Path(__file__).parent.parent))
 
 import argparse
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
-from prism.benchmark.services.dataset_generator import DatasetGenerator
 from prism.benchmark.configs.benchmark_config import BenchmarkConfig
+from prism.benchmark.services.dataset_generator import DatasetGenerator
 
 
 def generate_benchmark_dataset(

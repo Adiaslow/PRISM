@@ -6,7 +6,7 @@ import networkx as nx
 import numpy as np
 from rdkit import Chem
 
-from prism.core.molecular_graph import MolecularGraph, Node, Edge
+from prism.core.molecular_graph import Edge, MolecularGraph, Node
 
 
 class TestMolecularGraph(unittest.TestCase):

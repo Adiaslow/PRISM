@@ -1,6 +1,6 @@
 """Molecular pair representation for benchmarking."""
 
-from typing import Dict, List, Optional, Set, Tuple, Union, Any
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from pydantic import BaseModel, Field

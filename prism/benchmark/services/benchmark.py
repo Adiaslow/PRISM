@@ -5,7 +5,7 @@ import os
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from typing import Dict, List, Optional, Set, Tuple, Union, Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -14,10 +14,10 @@ from rdkit import Chem
 
 from prism import MolecularGraphMatcher
 from prism.algorithm.graph_matcher import MatchParameters
-from prism.core.molecular_pair import BenchmarkDataset, MolecularPair
 from prism.benchmark.core.metrics import BenchmarkMetrics, TestResult
-from prism.core.molecular_graph import MolecularGraph
 from prism.core.compatibility_matrix import CompatibilityParameters
+from prism.core.molecular_graph import MolecularGraph
+from prism.core.molecular_pair import BenchmarkDataset, MolecularPair
 from prism.core.node_signature import NodeSignatureGenerator
 
 

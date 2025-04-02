@@ -1,11 +1,11 @@
-"""Input handler for converting various formats to MolecularGraph."""
+"""Input handler for converting various molecular formats to MolecularGraph."""
 
-from typing import Union, Optional, Tuple
+from typing import Optional, Union
 
 import networkx as nx
 from rdkit import Chem
 
-from prism.core.molecular_graph import MolecularGraph, Node, Edge
+from prism.core.molecular_graph import Edge, MolecularGraph, Node
 
 
 def convert_to_molecular_graph(

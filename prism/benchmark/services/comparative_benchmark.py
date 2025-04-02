@@ -5,7 +5,7 @@ import os
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from typing import Dict, List, Optional, Set, Tuple, Union, Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -13,11 +13,11 @@ from pydantic import BaseModel, Field
 from rdkit import Chem
 
 from prism.benchmark.adapters.algorithm_adapters import (
-    get_all_algorithm_adapters,
     AlgorithmAdapter,
+    get_all_algorithm_adapters,
 )
-from prism.core.molecular_pair import BenchmarkDataset, MolecularPair
 from prism.benchmark.core.metrics import BenchmarkMetrics, TestResult
+from prism.core.molecular_pair import BenchmarkDataset, MolecularPair
 
 
 class AlgorithmResult(BaseModel):
