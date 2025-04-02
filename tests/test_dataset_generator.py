@@ -19,6 +19,10 @@ class TestDatasetGenerator(unittest.TestCase):
         """Set up test environment."""
         self.config = BenchmarkConfig.default_config()
         self.generator = DatasetGenerator(self.config)
+        # Load the dataset
+        dataset_path = "benchmark_data/pubchem_metabolite_pathways_filter.csv"
+        loaded_count = self.generator.load_molecular_dataset(dataset_path)
+        self.assertTrue(loaded_count > 0, "Failed to load molecules from dataset")
 
     def test_generate_dataset(self):
         """Test generating a small dataset."""
@@ -60,6 +64,7 @@ class TestDatasetGenerator(unittest.TestCase):
 
         # Count atoms
         atom_counts = Counter(all_atoms)
+        print(f"Atom distribution: {dict(atom_counts)}")  # Add debug output
 
         # Check that we have at least these common atoms
         expected_atoms = ["C", "O", "N"]

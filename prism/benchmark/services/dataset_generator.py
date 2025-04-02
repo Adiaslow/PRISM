@@ -765,30 +765,47 @@ class DatasetGenerator(MoleculePool):
         Returns:
             SMILES string of generated fragment or None if generation failed
         """
-        # Define building blocks for different sizes with simpler structures
+        # Define building blocks for different sizes with diverse atom types
         blocks = {
             "small": [
                 "CC",  # Ethane
-                "CCC",  # Propane
-                "CCCC",  # Butane
-                "C1CCCC1",  # Cyclopentane
                 "CCO",  # Ethanol
-                "CCCO",  # Propanol
+                "CCN",  # Ethylamine
+                "CO",  # Methanol
+                "CN",  # Methylamine
+                "CC(=O)O",  # Acetic acid
+                "CC(=O)N",  # Acetamide
+                "NC=O",  # Formamide
+                "C=O",  # Formaldehyde
+                "CNO",  # N-methylhydroxylamine
             ],
             "medium": [
                 "C1CCCCC1",  # Cyclohexane
-                "CC1CCCCC1",  # Methylcyclohexane
-                "C1CCCCCC1",  # Cycloheptane
-                "CCCCCCCC",  # Octane
+                "C1CCNCC1",  # Piperidine
+                "C1COCCC1",  # Tetrahydropyran
+                "CC(=O)CCO",  # 4-hydroxy-2-butanone
+                "CC(=O)CN",  # Aminoacetone
+                "CC(=O)OC",  # Methyl acetate
+                "CC(=O)NC",  # N-methylacetamide
+                "OCC(O)CO",  # Glycerol
+                "NCCO",  # Ethanolamine
             ],
             "large": [
                 "C1CCC2CCCCC2C1",  # Decalin
                 "C1CC2CCC1CC2",  # Bicyclo[2.2.2]octane
-                "CCCCCCCCCCCC",  # Dodecane
+                "C1CCCCC1NC=O",  # N-cyclohexylformamide
+                "CC(=O)C1CCCCC1",  # Cyclohexyl methyl ketone
+                "OCC1CCCCC1",  # Cyclohexylmethanol
+                "CC(=O)CCCCO",  # 5-hydroxypentanone
+                "OCCCCCO",  # 1,5-pentanediol
+                "NCCCCCCN",  # 1,6-hexanediamine
             ],
             "xlarge": [
                 "C1CC2CCC3CCC4CCC1CC2CC34",  # Twistane
-                "CCCCCCCCCCCCCCCC",  # Hexadecane
+                "OCCCCCCCCCCCO",  # 1,10-decanediol
+                "CC(=O)CCCCCCCCCO",  # 10-hydroxydecanone
+                "NCCCCCCCCCCN",  # 1,10-decanediamine
+                "OCC1CCC2CCCCC2C1",  # Decalinylmethanol
             ],
         }
 
@@ -816,7 +833,7 @@ class DatasetGenerator(MoleculePool):
                     # If we need a larger molecule, try to extend it
                     current_size = mol.GetNumAtoms()
                     if current_size < target_size:
-                        # Try to extend with smaller blocks
+                        # Try to extend with smaller blocks that include heteroatoms
                         extension_blocks = blocks["small"]
                         for _ in range(min(3, target_size - current_size)):
                             ext_block = random.choice(extension_blocks)

@@ -1,25 +1,45 @@
 # prism/algorithm/graph_matcher.py
+"""Bidirectional A* guided graph matching algorithm.
 
-"""Bidirectional A* guided graph matching algorithm."""
+This module implements the bidirectional A* guided graph matching algorithm, which is a
+fast and accurate method for finding the maximum common subgraph between two molecular
+graphs.
 
+Classes:
+    MatchResult: Result of a graph matching operation.
+    MatchParameters: Parameters for controlling the matching process.
+    PartialMatch: Represents a partial match during the search process.
+    GraphMatcher: Implements the bidirectional A* guided graph matching algorithm.
+"""
+
+# Standard library imports
 import heapq
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from functools import total_ordering
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple
 
+# Local imports
 import numpy as np
 from pydantic import BaseModel, Field
 
+# Local imports
 from prism.core.molecular_graph import MolecularGraph
 from prism.core.compatibility_matrix import CompatibilityMatrix
 from prism.algorithm.seed_selection import SeedCandidate, SeedSelector
 
 
 class MatchResult(BaseModel):
-    """Result of a graph matching operation."""
+    """Result of a graph matching operation.
+
+    Attributes:
+        mapping: Dictionary mapping nodes from graph A to nodes from graph B.
+        size: Number of nodes in the maximum common subgraph.
+        score: Score of the maximum common subgraph.
+        match_time: Time taken to find the maximum common subgraph.
+    """
 
     mapping: Dict[int, int] = Field(default_factory=dict)
     size: int = 0
@@ -27,13 +47,25 @@ class MatchResult(BaseModel):
     match_time: float = 0.0
 
     class Config:
-        """Pydantic model configuration."""
+        """Pydantic model configuration.
+
+        Attributes:
+            frozen: Whether the model is frozen.
+        """
 
         frozen = True
 
 
 class MatchParameters(BaseModel):
-    """Parameters for controlling the matching process."""
+    """Parameters for controlling the matching process.
+
+    Attributes:
+        max_time_seconds: Maximum time to run the matching process.
+        max_iterations: Maximum number of iterations to run the matching process.
+        num_threads: Number of threads to use for the matching process.
+        use_forward_checking: Whether to use forward checking.
+        use_conflict_backjumping: Whether to use conflict backjumping.
+    """
 
     max_time_seconds: int = 60
     max_iterations: int = 1000000
@@ -42,7 +74,11 @@ class MatchParameters(BaseModel):
     use_conflict_backjumping: bool = True
 
     class Config:
-        """Pydantic model configuration."""
+        """Pydantic model configuration.
+
+        Attributes:
+            frozen: Whether the model is frozen.
+        """
 
         frozen = True
 
@@ -50,7 +86,20 @@ class MatchParameters(BaseModel):
 @total_ordering
 @dataclass
 class PartialMatch:
-    """Represents a partial match during the search process."""
+    """Represents a partial match during the search process.
+
+    Attributes:
+        mapping: Dictionary mapping nodes from graph A to nodes from graph B.
+        mapped_a: Set of nodes from graph A that have been mapped.
+        mapped_b: Set of nodes from graph B that have been mapped.
+        frontier_a: Set of nodes from graph A that are in the frontier.
+        frontier_b: Set of nodes from graph B that are in the frontier.
+
+    Methods:
+        copy: Create a deep copy of this partial match.
+        __lt__: Compare based on total estimated score (for priority queue).
+        __eq__: Check equality based on mappings.
+    """
 
     # Current mapping from graph A nodes to graph B nodes
     mapping: Dict[int, int] = field(default_factory=dict)
@@ -72,7 +121,14 @@ class PartialMatch:
     conflict_set: Dict[int, Set[int]] = field(default_factory=dict)
 
     def __lt__(self, other):
-        """Compare based on total estimated score (for priority queue)."""
+        """Compare based on total estimated score (for priority queue).
+
+        Args:
+            other: Other partial match to compare to.
+
+        Returns:
+            True if this partial match has a higher total estimated score, False otherwise.
+        """
         if not isinstance(other, PartialMatch):
             return NotImplemented
         return (self.current_score + self.estimated_future_score) > (
@@ -80,13 +136,24 @@ class PartialMatch:
         )
 
     def __eq__(self, other):
-        """Check equality based on mappings."""
+        """Check equality based on mappings.
+
+        Args:
+            other: Other partial match to compare to.
+
+        Returns:
+            True if the mappings are equal, False otherwise.
+        """
         if not isinstance(other, PartialMatch):
             return NotImplemented
         return self.mapping == other.mapping
 
     def copy(self):
-        """Create a deep copy of this partial match."""
+        """Create a deep copy of this partial match.
+
+        Returns:
+            Deep copy of this partial match.
+        """
         return PartialMatch(
             mapping=self.mapping.copy(),
             mapped_a=self.mapped_a.copy(),
@@ -101,7 +168,14 @@ class PartialMatch:
 
 
 class GraphMatcher:
-    """Implements the bidirectional A* guided graph matching algorithm."""
+    """Implements the bidirectional A* guided graph matching algorithm.
+
+    Attributes:
+        graph_a: First molecular graph.
+        graph_b: Second molecular graph.
+        compatibility_matrix: Compatibility matrix between the graphs.
+        parameters: Matching parameters.
+    """
 
     def __init__(
         self,

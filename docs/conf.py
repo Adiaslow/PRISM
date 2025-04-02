@@ -1,4 +1,5 @@
-# Configuration file for the Sphinx documentation builder.
+# docs/conf.py
+"""Configuration file for the Sphinx documentation builder."""
 
 import os
 import sys
@@ -7,8 +8,8 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # Project information
 project = "PRISM"
-copyright = "2024, PRISM Team"
-author = "PRISM Team"
+copyright = "2025, Adam Murray"
+author = "Adam Murray"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"

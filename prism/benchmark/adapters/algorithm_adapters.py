@@ -94,22 +94,20 @@ class AlgorithmAdapter(ABC):
         """
         graph = nx.Graph()
 
-        # Add nodes with all atom attributes
+        # Add nodes with essential atom attributes
         for i, atom in enumerate(mol.GetAtoms()):
             graph.add_node(
                 i,
                 symbol=atom.GetSymbol(),
+                aromatic=atom.GetIsAromatic(),
+                # Include only essential attributes for matching
                 atomic_num=atom.GetAtomicNum(),
                 formal_charge=atom.GetFormalCharge(),
-                hybridization=str(atom.GetHybridization()),
-                is_aromatic=atom.GetIsAromatic(),
                 num_explicit_hs=atom.GetNumExplicitHs(),
-                num_implicit_hs=atom.GetNumImplicitHs(),
-                total_num_hs=atom.GetTotalNumHs(),
-                is_ring=atom.IsInRing(),
+                in_ring=atom.IsInRing(),
             )
 
-        # Add edges with all bond attributes
+        # Add edges with essential bond attributes
         for bond in mol.GetBonds():
             i = bond.GetBeginAtomIdx()
             j = bond.GetEndAtomIdx()
@@ -117,12 +115,44 @@ class AlgorithmAdapter(ABC):
                 i,
                 j,
                 bond_type=str(bond.GetBondType()),
-                is_aromatic=bond.GetIsAromatic(),
-                is_conjugated=bond.GetIsConjugated(),
-                is_ring=bond.IsInRing(),
+                aromatic=bond.GetIsAromatic(),
+                in_ring=bond.IsInRing(),
             )
 
         return graph
+
+    def _find_maximum_common_subgraph_networkx(
+        self, graph1: nx.Graph, graph2: nx.Graph
+    ) -> Tuple[Dict[int, int], int]:
+        """Find maximum common subgraph using NetworkX.
+
+        Args:
+            graph1: First graph
+            graph2: Second graph
+
+        Returns:
+            Tuple of (mapping dictionary, size of mapping)
+        """
+        best_mapping = {}
+        best_size = 0
+
+        # Try both graph orderings since subgraph isomorphism is directional
+        for g1, g2 in [(graph1, graph2), (graph2, graph1)]:
+            # Find all subgraph isomorphisms
+            matcher = nx.algorithms.isomorphism.GraphMatcher(
+                g2, g1, node_match=node_match, edge_match=edge_match
+            )
+
+            for mapping in matcher.subgraph_isomorphisms_iter():
+                if len(mapping) > best_size:
+                    best_mapping = mapping
+                    best_size = len(mapping)
+
+        # Convert mapping to standard format (g1 -> g2)
+        if graph1 is not graph2:  # If we used the reversed order
+            best_mapping = {v: k for k, v in best_mapping.items()}
+
+        return best_mapping, best_size
 
     @abstractmethod
     def find_maximum_common_subgraph(
@@ -242,22 +272,25 @@ class RDKitMCSAdapter(AlgorithmAdapter):
         """Initialize the adapter."""
         super().__init__(**kwargs)
         self._name = "RDKit-MCS"
-        self._description = (
-            "RDKit's maximum common subgraph algorithm (NetworkX implementation)"
-        )
+        self._description = "RDKit's native maximum common substructure algorithm"
 
         # RDKit MCS parameters
         self.params = {
             "timeout": kwargs.get("timeout", 60),  # seconds
             "min_size": kwargs.get("min_size", 3),
+            "maximize": kwargs.get("maximize", "atoms"),  # "atoms" or "bonds"
+            "match_valences": kwargs.get("match_valences", True),
+            "ring_matches_ring_only": kwargs.get("ring_matches_ring_only", True),
+            "complete_rings_only": kwargs.get("complete_rings_only", True),
+            "match_chiral_tag": kwargs.get("match_chiral_tag", False),
         }
 
-        self.available = nx is not None
+        self.available = True
 
     def find_maximum_common_subgraph(
         self, mol1: Chem.Mol, mol2: Chem.Mol
     ) -> Dict[str, Any]:
-        """Find the maximum common subgraph using NetworkX's implementation.
+        """Find the maximum common subgraph using RDKit's native MCS implementation.
 
         Args:
             mol1: First molecule
@@ -272,44 +305,48 @@ class RDKitMCSAdapter(AlgorithmAdapter):
                 "size": 0,
                 "time": 0.0,
                 "success": False,
-                "error": "NetworkX not available",
+                "error": "RDKit not available",
             }
 
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
-            graph1 = self._mol_to_networkx(mol1)
-            graph2 = self._mol_to_networkx(mol2)
-
             # Run the algorithm and measure time
             start_time = time.time()
 
-            # Find maximum common subgraph using NetworkX
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
+            # Create MCS parameters
+            mcs_params = rdFMCS.MCSParameters()
+            mcs_params.MaximizeBonds = self.params["maximize"] == "bonds"
+            mcs_params.Timeout = self.params["timeout"]
+            mcs_params.MatchValences = self.params["match_valences"]
+            mcs_params.RingMatchesRingOnly = self.params["ring_matches_ring_only"]
+            mcs_params.CompleteRingsOnly = self.params["complete_rings_only"]
+            mcs_params.MatchChiralTag = self.params["match_chiral_tag"]
 
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
+            # Find MCS
+            mcs_result = rdFMCS.FindMCS([mol1, mol2], mcs_params)
 
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
+            # Get the mapping between the molecules
+            if mcs_result.numAtoms > 0:
+                # Get the MCS as a molecule
+                mcs_mol = Chem.MolFromSmarts(mcs_result.smartsString)
+
+                # Get atom mappings
+                matches1 = mol1.GetSubstructMatch(mcs_mol)
+                matches2 = mol2.GetSubstructMatch(mcs_mol)
+
+                # Create mapping dictionary
+                mapping = {i: j for i, j in zip(matches1, matches2)}
+                size = len(mapping)
+            else:
+                mapping = {}
+                size = 0
 
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
@@ -353,40 +390,20 @@ class McGregorAdapter(AlgorithmAdapter):
             Result dictionary
         """
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
+            # Convert molecules to NetworkX graphs
             graph1 = self._mol_to_networkx(mol1)
             graph2 = self._mol_to_networkx(mol2)
 
             # Run the algorithm and measure time
             start_time = time.time()
-
-            # Find maximum common subgraph using NetworkX
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
-
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
-
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
-
+            mapping, size = self._find_maximum_common_subgraph_networkx(graph1, graph2)
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
@@ -422,7 +439,7 @@ class MCSPlusAdapter(AlgorithmAdapter):
     def find_maximum_common_subgraph(
         self, mol1: Chem.Mol, mol2: Chem.Mol
     ) -> Dict[str, Any]:
-        """Find the maximum common subgraph using NetworkX's implementation.
+        """Find the maximum common subgraph using MCSP+.
 
         Args:
             mol1: First molecule
@@ -441,40 +458,20 @@ class MCSPlusAdapter(AlgorithmAdapter):
             }
 
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
+            # Convert molecules to NetworkX graphs
             graph1 = self._mol_to_networkx(mol1)
             graph2 = self._mol_to_networkx(mol2)
 
             # Run the algorithm and measure time
             start_time = time.time()
-
-            # Find maximum common subgraph using NetworkX
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
-
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
-
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
-
+            mapping, size = self._find_maximum_common_subgraph_networkx(graph1, graph2)
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
@@ -508,7 +505,7 @@ class UllmannAdapter(AlgorithmAdapter):
     def find_maximum_common_subgraph(
         self, mol1: Chem.Mol, mol2: Chem.Mol
     ) -> Dict[str, Any]:
-        """Find the maximum common subgraph using NetworkX's implementation.
+        """Find the maximum common subgraph using Ullmann's algorithm.
 
         Args:
             mol1: First molecule
@@ -527,40 +524,20 @@ class UllmannAdapter(AlgorithmAdapter):
             }
 
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
+            # Convert molecules to NetworkX graphs
             graph1 = self._mol_to_networkx(mol1)
             graph2 = self._mol_to_networkx(mol2)
 
             # Run the algorithm and measure time
             start_time = time.time()
-
-            # Find maximum common subgraph using NetworkX
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
-
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
-
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
-
+            mapping, size = self._find_maximum_common_subgraph_networkx(graph1, graph2)
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
@@ -594,7 +571,7 @@ class CliquePlusAdapter(AlgorithmAdapter):
     def find_maximum_common_subgraph(
         self, mol1: Chem.Mol, mol2: Chem.Mol
     ) -> Dict[str, Any]:
-        """Find the maximum common subgraph using NetworkX's implementation.
+        """Find the maximum common subgraph using Clique+.
 
         Args:
             mol1: First molecule
@@ -613,40 +590,20 @@ class CliquePlusAdapter(AlgorithmAdapter):
             }
 
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
+            # Convert molecules to NetworkX graphs
             graph1 = self._mol_to_networkx(mol1)
             graph2 = self._mol_to_networkx(mol2)
 
             # Run the algorithm and measure time
             start_time = time.time()
-
-            # Find maximum common subgraph using NetworkX
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
-
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
-
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
-
+            mapping, size = self._find_maximum_common_subgraph_networkx(graph1, graph2)
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
@@ -699,40 +656,20 @@ class VF2Adapter(AlgorithmAdapter):
             }
 
         try:
-            # Convert molecules to NetworkX graphs with exact attributes
+            # Convert molecules to NetworkX graphs
             graph1 = self._mol_to_networkx(mol1)
             graph2 = self._mol_to_networkx(mol2)
 
             # Run the algorithm and measure time
             start_time = time.time()
-
-            # Find maximum common subgraph using VF2
-            matcher = nx.algorithms.isomorphism.GraphMatcher(
-                graph2,
-                graph1,
-                node_match=node_match,
-                edge_match=edge_match,
-            )
-
-            # Get the largest common subgraph
-            best_mapping = {}
-            best_size = 0
-
-            for mapping in matcher.subgraph_isomorphisms_iter():
-                if len(mapping) > best_size:
-                    best_mapping = mapping
-                    best_size = len(mapping)
-
+            mapping, size = self._find_maximum_common_subgraph_networkx(graph1, graph2)
             end_time = time.time()
 
-            # Convert mapping to the expected format
-            result_mapping = {v: k for k, v in best_mapping.items()}
-
             return {
-                "mapping": result_mapping,
-                "size": best_size,
+                "mapping": mapping,
+                "size": size,
                 "time": end_time - start_time,
-                "success": best_size >= self.params["min_size"],
+                "success": size >= self.params["min_size"],
                 "error": None,
             }
 
