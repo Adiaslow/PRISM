@@ -3,7 +3,6 @@
 [![PyPI version](https://badge.fury.io/py/prism-molecular.svg)](https://badge.fury.io/py/prism-molecular)
 [![Documentation Status](https://readthedocs.org/projects/prism-molecular/badge/?version=latest)](https://prism-molecular.readthedocs.io/en/latest/?badge=latest)
 [![Tests](https://github.com/Adiaslow/prism/workflows/Tests/badge.svg)](https://github.com/Adiaslow/prism/actions)
-[![Coverage](https://codecov.io/gh/Adiaslow/prism/branch/main/graph/badge.svg)](https://codecov.io/gh/Adiaslow/prism)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 PRISM is a high-performance algorithm for finding maximum common substructures in molecular graphs. It uses a parallel recursive approach combined with advanced heuristics to efficiently identify structural similarities between molecules.
