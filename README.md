@@ -162,14 +162,14 @@ Constraints include:
 - Element type compatibility
 - Degree compatibility:
 
-$$\left|deg(v_1) - deg(v_2)\right| \leq \tau_{deg}$$
+$$\left|\deg(v_1) - \deg(v_2)\right| \leq \tau_{deg}$$
 
 - Bond type compatibility
 - Valence compatibility
 
 where:
 
-- $deg(v)$: Degree (number of bonds) of node $v$
+- $\deg(v)$: Degree (number of bonds) of node $v$
 - $\tau_{deg} \in \mathbb{N}$: Degree difference threshold
 
 #### 3. Seed Selection
